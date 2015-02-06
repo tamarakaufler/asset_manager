@@ -66,10 +66,10 @@ sub api  :Path('/api')   :ActionClass('REST') {
     $c->stash->{ entity_type }   = shift @url_params;
 
     if (! $c->stash->{ entity_type }        || 
-        ! scalar grep { $c->stash->{ entity_type } eq $_ } qw(asset datacentre outfit asset_outfit)) {
+        ! scalar grep { $c->stash->{ entity_type } eq $_ } qw(asset datacentre software asset_software)) {
         $self->status_bad_request(
                             $c,
-                            message => 'Error: /api/asset|datacentre|outfit asset_outfit/...',
+                            message => 'Error: /api/asset|datacentre|software asset_software/...',
                         );
     }
 
