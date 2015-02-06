@@ -52,15 +52,15 @@ PROVIDED FUNCTIONALITY
 
 The application does not, currently, provide all the required functionality, and there is scope for improvement in what is provided.
 
-1) CRud for asset/datacentre/software ... search (by id and name) and software (tagging) so far
-2) Retrieval of a list of associate, their categories and associated softwares
-3) Tagging of associate(asset_software)
-4) asset and categories can be created by uploading a CSV or JSON file. Format of the JSON file can be a hash or an array of hashes.
+1) cRud  for asset/datacentre/software ... search (by id and name)
+2) cRud: Retrieval of a list of associate, their categories and associated softwares
+3) Crud: Associate software (asset_software)
+4) Crud: Assets and datacentres can be created by uploading a CSV or JSON file. Format of the JSON file can be a hash or an array of hashes.
 
 DESIGN
 
-I took advantage of the boilerplate code offered by Catalyst and its base RESTful controller. There are two RESTful controllers: Api and Tag,
-and one library module with helper functions.
+I took advantage of the boilerplate code offered by Catalyst and its base RESTful controller. There are three RESTful controllers: Api, Software and Docs,
+and one library module with helper functions and one documentation class.
 
 CRud implementation is done through DBIC introspection, so the same code can be used for all entity types (asset/datacentre etc).
 Retrieval of the assets list uses a convenience Result Clothing instance method. 
@@ -77,7 +77,7 @@ GET:
     curl -X GET  http://localhost:3010/api/asset/id/3
     curl -X GET  http://localhost:3010/api/asset/software/3
     curl -X GET  http://localhost:3010/api/asset/name/server%202
-    curl -X GET  http://localhost:3010/api/asset/name/%Trainers    (fuzzy search)
+    curl -X GET  http://localhost:3010/api/asset/name/%server    (fuzzy search)
     curl -X GET  http://localhost:3010/api/asset/name/Nice™%       (fuzzy search)
     curl -X GET  http://localhost:3010/api/datacentre/name/Prague
     curl -X GET  http://localhost:3010/api/software/id/3
