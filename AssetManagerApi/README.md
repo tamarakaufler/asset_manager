@@ -74,6 +74,7 @@ sample upload files are in sample_files dir on the same lever as the README file
 1) CRud for asset/datacentre/software ... search (by id and name) and creation so far
 
 GET:
+
     curl -X GET  http://localhost:3010/api/asset/id/3
     curl -X GET  http://localhost:3010/api/asset/software/3
     curl -X GET  http://localhost:3010/api/asset/name/server%202
@@ -84,6 +85,7 @@ GET:
     curl -X GET  http://localhost:3010/api/software
 
 POST:
+
     curl -X POST -H "Accept: application/json" -H "Content-type: application/json" -d '{"name":""}'  http://localhost:3010/api/datacentre
     curl -X POST -T software.json  http://localhost:3010/software/associate
 
