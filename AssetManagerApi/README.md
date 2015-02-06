@@ -23,16 +23,18 @@ Required modules are listed in Makefile.PL and will be installed by running
 INSTALLATION
 
     From tarball:
-        unpack the tarball: tar zxvf wardrobe_manager_api.tar.gz
+        unpack the tarball: tar zxvf asset_manager_api.tar.gz
 
     From github (if available):
-        git clone git://github.com/tamarakaufler/wardrobe_manager_api.git
+        git clone git://github.com/tamarakaufler/asset_manager.git
+        cd asset_manager/AssetManagerApi
+        script/assetmanagerapi_server -h localhost -p 3010 etc
 
 MySQL
 
     cd sql (on the same level as the README file)
-    mysql -u root -p wardrobemanagerapi_user.sql
-    mysql -u root -p wardrobemanagerapi.sql
+    mysql -u root -p assetmanager_user.sql
+    mysql -u root -p assetmanager.sql
 
     To import the provided test data, if desired:
         mysql -u root -p import_data.sql
