@@ -79,7 +79,7 @@ sub get_asset_summary {
     my $response_data = [];
     eval {
         my $assets_rs  = $c->model('AssetManagerDB::Asset')
-                              ->search({}, { prefetch => { 'datacentre' }});
+                              ->search({}, { prefetch => [ 'datacentre' ] });
     
         while (my $asset_data = $assets_rs->next) {
             push @$response_data, { asset => $asset_data->get_summary($c) }; 
