@@ -20,8 +20,6 @@ use JSON                        qw(from_json);
 use Text::CSV::Auto;
 use URI::Escape;
 
-$|++;
-use Data::Dumper qw (Dumper);
 $ENV{DBIC_TRACE} = 1;
 
 require Exporter;
