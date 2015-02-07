@@ -12,7 +12,6 @@ use AssetManagerApi2::Helper::Entity qw(
                                         create_output_structure
                                      );
 
-my $asset_dbic = 'AssetManagerApi2::Schema::AssetManagerDB::Result::Asset';
 my ($asset_model,
     $asset_software_model,
     $datacentre_model) = ('AssetManagerDB::Asset',
@@ -25,21 +24,21 @@ has 'c'          => (is       => 'ro',
                      required =>  1,
                     );
 
+has 'dbic'       => (is       => 'ro', 
+                     isa      => 'AssetManagerApi2::Schema::AssetManagerDB::Result::Asset',
+                     builder  => '_build_dbic',
+                    );
+
+has 'type'       => (is       => 'ro', 
+                     isa      => 'Str',
+                     lazy     =>  1,
+                     builder  => '_build_type',
+                     );
+
 has 'id'         => (is       => 'ro', 
                      isa      => 'Int',
                      required =>  1,
                     );
-
-has 'dbic'       => (is       => 'ro', 
-                     isa      => $asset_dbic,
-                     builder => '_build_dbic',
-                    );
-
-has 'type'       => (is      => 'ro', 
-                     isa     => 'Str',
-                     lazy    =>  1,
-                     builder => '_build_type',
-                     );
 
 has 'name'       => (is  => 'rw', 
                      isa => 'Str',
@@ -59,6 +58,7 @@ has 'software'   => (is  => 'ro',
                      isa => "ArrayRef[HashRef]|ArrayRef",
                      lazy     =>  1,
                      builder => '_build_software',
+                     writer => '_set_software',
                     );
 
 =head2 MOOSE METHODS

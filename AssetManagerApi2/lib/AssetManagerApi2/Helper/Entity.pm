@@ -85,7 +85,7 @@ sub create_output_structure {
 
 =head3 massage4output
 
-IN:     entity object
+IN:     Entity object
 OUT:    Perl structure for JSON output
 
 =cut
