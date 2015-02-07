@@ -5,9 +5,13 @@ use namespace::autoclean;
 BEGIN { extends 'Catalyst::Controller::REST'; }
 __PACKAGE__->config(default => 'application/json');
 
-use AssetManagerApi2::Entity::Asset;
+#use AssetManagerApi2::Entity::Asset;
 use AssetManagerApi2::Helper::Entity qw(
+                                        get_listing
                                         massage4output
+
+                                        error_exists
+                                        throws_error
                                      );
 
 ##use AssetManagerApi2::Controller::Helper::Api qw(
@@ -50,12 +54,15 @@ sub index :Path :Args(0) {
 
 =head2 api
 
+Base method to which the RESTful GET/POST etc methods are chained
+Capture the entity type, for which the search will be performed
+
 =cut
 
-sub api  :Path('/api')   :ActionClass('REST') {
-    my ($self, $c, @url_params) = @_;
+sub api  :Chained('/') :PathPart('api') CaptureArgs(1) :ActionClass('REST') {
+    my ($self, $c, $type) = @_;
 
-    $c->stash->{ entity_type }   = shift @url_params;
+    $c->stash->{ entity_type }   = $type;
 
     if (! $c->stash->{ entity_type }        || 
         ! scalar grep { $c->stash->{ entity_type } eq $_ } qw(asset datacentre software asset_software)) {
@@ -64,26 +71,26 @@ sub api  :Path('/api')   :ActionClass('REST') {
                             message => 'Error: /api/asset|datacentre|software asset_software/...',
                         );
     }
-
-    $c->stash->{ search_params } = \@url_params;
 }
 
 =head2 api_GET
 
+The method will accept an arbitrary number of url parameters,
+providing flexible search options
+
 =cut
 
-sub api_GET {
-    my ( $self, $c ) = @_;
+sub api_GET :Chained('api') :PathPart('') Args {
+    my ( $self, $c, @url_params ) = @_;
 
     my $type =  $c->stash->{entity_type};
+    $c->stash->{ search_params } = \@url_params;
 
-    my $entity = AssetManagerApi2::Entity::Asset->new({ c => $c, id => 1});
-    my $response_data = [massage4output($entity)];
+    #my $entity = AssetManagerApi2::Entity::Asset->new({ c => $c, id => 1});
+    #my $response_data = [massage4output($entity)];
 
-    #my $response_data = [{ id => $entity->id, name => $entity->name, datacentre => $entity->datacentre->name }];
-    
-    #my $response_data = get_listing($c, $type, $c->stash->{ search_params });
-    #throws_error($self, $c, $response_data);
+    my $response_data = get_listing($c, $type, $c->stash->{ search_params });
+    throws_error($self, $c, $response_data);
 
     if (scalar @$response_data) {
         $self->status_ok(

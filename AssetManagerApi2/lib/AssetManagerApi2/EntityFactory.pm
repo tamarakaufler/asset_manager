@@ -1,37 +1,39 @@
 package AssetManagerApi2::EntityFactory;
 
-use Moose;
-use namespace::autoclean;
-
 use v5.018;
 use utf8;
 use open    ':encoding(UTF-8)';
 use feature 'unicode_strings';
 
-#has 'entity' => (is      => 'ro', 
-#                 isa     => 'Str',
-#                 required => 1,
-#                 builder => '_build_entity',
-#                );
+use FindBin qw($Bin);
+use lib "$Bin/../lib";
 
-around BUILDARGS => sub {
-    my $orig  = shift;
+say STDERR "__PACKAGE__ : $Bin/../lib";
+
+use AssetManagerApi2::Helper::Entity qw(
+                                        type2table
+                                     );
+
+=head3 new
+
+IN: class
+    hash of input params for the entity object to be created
+    and c and entity type info
+
+=cut
+
+sub new {
     my $class = shift;
 
-    my $entity = get_entity_type_from_input('entity'); 
+    #my $entity = type2table(shift); 
+    my $entity = ucfirst shift; 
 
-    my $path  = "Entity/$entity.pm";
-    $class    = "Entity::$entity";
+    my $path  = "AssetManagerApi2/Entity/$entity.pm";
+    $class    = "AssetManagerApi2::Entity::$entity";
 
     require $path;
-    return $class->new('entity' => $entity);
+    return $class->new(@_);
 };
-
-#sub _build_entity { 
-#    my ($self) = @_;
-#
-#    $self->entity(); 
-#}
 
 
 1;
