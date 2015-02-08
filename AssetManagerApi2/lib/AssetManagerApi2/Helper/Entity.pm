@@ -7,12 +7,18 @@ use v5.018;
 require Exporter;
 our @ISA       = qw(Exporter);
 our @EXPORT_OK = qw(
+                    create_entity
                     create_entity_input
                     massage4output
                     create_output_structure
 
                     type2table
                     get_listing
+
+                    process_csv_upload
+                    process_json_upload
+                    create_from_inline_input
+
                     error_exists
                     throws_error
                  );
@@ -29,6 +35,7 @@ use Text::CSV::Auto;
 use URI::Escape;
 
 use Data::Dumper qw(Dumper);
+$ENV{DBIC_TRACE} = 1;
 
 use AssetManagerApi2::EntityFactory;
 
@@ -191,7 +198,7 @@ sub get_listing {
 
     my @entity_objects = ();
     foreach my $row (@rows) {
-        
+
         my $input         = create_entity_input($c, $type, $row);
         my $entity_object = AssetManagerApi2::EntityFactory->new($type, $input);
         
@@ -259,6 +266,121 @@ sub error_exists {
     }
 
     return;
+}
+
+=head3 process_csv_upload
+
+csv file contains:
+        asset name, datacentre name headers
+
+IN:     Catalyst object
+        Upload object
+
+OUT:    on success: 1
+        on error:   { error => { status => ... , message => ... } }
+
+=cut
+
+sub process_csv_upload {
+    my ($c, $filepath) = @_; 
+
+    my $created_categories = [];
+    my $created_assets  = [];
+    eval {
+        my $auto = Text::CSV::Auto->new($filepath);
+
+        my $id=0;
+        $auto->process(sub { 
+            my ($row) = @_;  
+
+            my ($datacentre, $asset, $uri) = @_;
+
+            $datacentre = create_entity($c, 'datacentre', { name => $row->{asset_datacentre} });
+            die $datacentre if ref $datacentre eq 'HASH';
+
+            $uri = $c->uri_for("/api/datacentre/id/" . $datacentre->id)->as_string;
+            push @$created_categories, $uri;
+
+            my $sanitized = _sanitize($row->{asset_name});
+            $asset = $datacentre->find_or_create_related('assets', { name => $sanitized });
+            die $asset if ref $asset eq 'HASH';
+
+            $uri = $c->uri_for("/api/asset/id/" . $asset->id)->as_string;
+            push @$created_assets, $uri;
+        });
+    };
+    if ($@) {
+        my $error = { error => { status  => 'status_bad_request', 
+                                 message => "There were problems with processing your data: " . substr($@, 0, 250 ), }
+                    };
+        return $error;
+    }
+
+    return { datacentre => $created_categories, asset => $created_assets };
+}
+
+=head3 process_json_upload
+
+json file contains an array of hashes
+
+=cut
+
+sub process_json_upload {
+    my ($c, $fh) = @_; 
+
+    my $created_entities = [];
+    my $type = $c->stash->{ entity_type };
+
+    eval {
+        local $/; 
+        binmode $fh, ':encoding(UTF-8)';
+
+        my $encoded = <$fh>;
+        chomp $encoded;
+
+        my $data = from_json($encoded);
+
+        for my $props (@$data) {
+            my $entity   = create_entity($c, $type, $props);
+
+            die $entity->{ message } unless blessed $entity;
+
+            my $uri = $c->uri_for("/api/$type/id/" . $entity->id)->as_string;
+            push @$created_entities, $uri;
+        }
+    };
+    if ($@) {
+        return { error => { status  => 'status_bad_request',
+                            message => "There were problems with processing your data: " . substr($@, 0, 250 ), }
+        }
+    }
+
+    return { $type => $created_entities };
+}
+
+=head3 create_entity
+
+IN:     Catalyst object
+        entity type
+        entity properties
+
+OUT:    response as a hashref structure:    containing a link to the created entity
+
+=cut
+
+sub create_entity {
+    my ($c, $type, $data) = @_;
+
+    my %sanitized = ();
+    if (ref $data eq 'HASH') {
+        %sanitized = map { $_ => _sanitize($data->{$_}) } keys %$data; 
+    }
+
+    my $source = type2table( $type );
+    my $entity = $c->model("AssetManagerDB::$source")
+                   ->find_or_create(\%sanitized);
+
+    return $entity;
 }
 
 =head2 PRIVATE helper METHODS

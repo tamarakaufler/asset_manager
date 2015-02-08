@@ -5,10 +5,15 @@ use namespace::autoclean;
 BEGIN { extends 'Catalyst::Controller::REST'; }
 __PACKAGE__->config(default => 'application/json');
 
-#use AssetManagerApi2::Entity::Asset;
+use Lingua::EN::Inflect              qw(PL);
+
 use AssetManagerApi2::Helper::Entity qw(
                                         get_listing
                                         massage4output
+                                        
+                                        process_csv_upload
+                                        process_json_upload
+                                        create_from_inline_input
 
                                         error_exists
                                         throws_error
@@ -122,54 +127,54 @@ the input data format
 sub api_POST {
     my ($self, $c) = @_;
 
-##    my $response_data = {};
-##    my $upload        = $c->request->upload('file');
-##
-##    ## provided through -F -------------------------------------------------------------------
-##    if ($upload) {
-##
-##        my $filename    = $upload->filename;
-##        my $fh          = $upload->fh;
-##
-##        if (! $upload->size) {
-##            $response_data->{ error } = {
-##                                            status  => 'status_bad_request',
-##                                            message => 'Error: Uploaded file was empty.',
-##                                        };
-##        }
-##        elsif ($upload->size >= 5_000_000) {
-##            $response_data->{ error } = {
-##                                            status  => 'status_bad_request',
-##                                            message => 'Error: Upload size of a file is 5Mb.',
-##                                        };
-##        }
-##        elsif ($c->stash->{entity_type} =~ /\A(asset|datacentre)\z/ && $filename =~ m/\.csv$/) {
-##            $response_data = process_csv_upload($c, $upload->tempname);
-##        }
-##        elsif ($filename =~ /\.json$/) {
-##            $response_data = process_json_upload($c, $fh);
-##        }
-##        else {
-##            $response_data->{ error } = {
-##                                            status  => 'status_bad_request',
-##                                            message => 'Error: Content is not supported.',
-##                                        };
-##        }
-##        throws_error($self, $c, $response_data);
-##    }
-##    ## provided through -d/-T -------------------------------------------------------------------
-##    elsif ($c->req->data) {
-##
-##        $response_data = create_from_inline_input($c);
-##        throws_error($self, $c, $response_data);
-##    } 
-##
-##    # this, for performace reasons, returns links to all created resources in one response
-##    # for one created resource the response would be >>  status_created with location => $uri <<
-##    $self->status_ok(
-##                        $c,
-##                        entity => $response_data,
-##                    );
+    my $response_data = {};
+    my $upload        = $c->request->upload('file');
+
+    ## provided through -F -------------------------------------------------------------------
+    if ($upload) {
+
+        my $filename    = $upload->filename;
+        my $fh          = $upload->fh;
+
+        if (! $upload->size) {
+            $response_data->{ error } = {
+                                            status  => 'status_bad_request',
+                                            message => 'Error: Uploaded file was empty.',
+                                        };
+        }
+        elsif ($upload->size >= 5_000_000) {
+            $response_data->{ error } = {
+                                            status  => 'status_bad_request',
+                                            message => 'Error: Upload size of a file is 5Mb.',
+                                        };
+        }
+        elsif ($c->stash->{entity_type} =~ /\A(asset|datacentre)\z/ && $filename =~ m/\.csv$/) {
+            $response_data = process_csv_upload($c, $upload->tempname);
+        }
+        elsif ($filename =~ /\.json$/) {
+            $response_data = process_json_upload($c, $fh);
+        }
+        else {
+            $response_data->{ error } = {
+                                            status  => 'status_bad_request',
+                                            message => 'Error: Content is not supported.',
+                                        };
+        }
+        throws_error($self, $c, $response_data);
+    }
+    ## provided through -d/-T -------------------------------------------------------------------
+    elsif ($c->req->data) {
+
+        $response_data = create_from_inline_input($c);
+        throws_error($self, $c, $response_data);
+    } 
+
+    # this, for performace reasons, returns links to all created resources in one response
+    # for one created resource the response would be >>  status_created with location => $uri <<
+    $self->status_ok(
+                        $c,
+                        entity => $response_data,
+                    );
 }
 
 =head2 api_PUT

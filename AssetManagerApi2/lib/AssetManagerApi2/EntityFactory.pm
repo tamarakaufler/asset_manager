@@ -8,8 +8,6 @@ use feature 'unicode_strings';
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
-say STDERR "__PACKAGE__ : $Bin/../lib";
-
 use AssetManagerApi2::Helper::Entity qw(
                                         type2table
                                      );
