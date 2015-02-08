@@ -20,11 +20,10 @@ our @EXPORT_OK = qw(
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
-say STDERR "__PACKAGE__ : $Bin/../lib";
-
 use Lingua::EN::Inflect         qw(PL);
 use Lingua::EN::Inflect::Number qw(to_S);
 use Scalar::Util                qw(blessed);
+use List::MoreUtils             qw(any);
 use JSON                        qw(from_json);
 use Text::CSV::Auto;
 use URI::Escape;
@@ -98,7 +97,7 @@ sub massage4output {
     my $dbic = $entity->dbic;
 
     my %massaged = ();
-    my ($properties, $m2m_rels) = _get_properties($c, $type);
+    my ($properties, $simple_rels, $m2m_rels) = _get_properties($c, $type);
 
     my $uri = $c->uri_for("/api/$type/id/" . $dbic->id)->as_string;
     $massaged{link} = $uri;
@@ -116,11 +115,13 @@ sub massage4output {
 
             $uri = $c->uri_for("/api/$column/id/" . $dbic->$column->id)->as_string;
             $massaged{properties}{$column}{link} = $uri;
+
+            $uri = $c->uri_for("/docs/$column")->as_string;
+            $massaged{properties}{$column}{docs} = $uri;
         }
         else {
             $massaged{properties}{$column} = $dbic->$column;
         }
-
     }
 
     my @m2m_rel_properties = ();
@@ -276,11 +277,15 @@ sub _get_properties {
     my $table_schema  = $c->model('AssetManagerDB')->source($source);
     
     my @columns = map { { name => $_, is_rel => $table_schema->has_relationship($_) } } $table_schema->columns;
+    my %column  = ();
+    @column{@columns} = undef;
 
-    my @m2m_rels    = map { (split /_/, $_)[1] } $table_schema->relationships;
+    my @rels        =  $table_schema->relationships;
+    my @simple_rels =  grep { $_ !~ /_/ && ! exists $column{$_} } @rels;
+    my @m2m_rels    =  map  { (split /_/, $_)[1] } @rels;
     @m2m_rels = (@m2m_rels) ? @m2m_rels : ();
 
-    return (\@columns, \@m2m_rels);
+    return (\@columns, \@simple_rels, \@m2m_rels);
 }
 
 =head2 _process_search_params
