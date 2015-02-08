@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>[% title %]</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+ <body>
+	 <p><strong><a href="/asset_manager_cgi/manager.cgi">Welcome to The Wardrobe Manager</a></strong></p>
+
+	 [% IF message %] <p style="color: blue;"> [% message %]</p>[% END %]
+	 [% IF error %]   <p style="color: red;">[% error %]    </p>[% END %]
+
+	 <form name="search" method=GET action="/asset_manager_cgi/manager.cgi">
+		<input type="hidden" name="mode" value="search">
+
+		 Name of the item to search for <input type="text" name="asset_name" title="Name of the garment" />
+		 <input type="submit" value="Search" /><br />
+	 </form> 
+
+	 <form enctype="multipart/form-data" name="upload" method=POST action="/asset_manager_cgi/manager.cgi">
+		<input type="hidden" name="mode" value="upload">
+
+		 Name of the CSV file to upload <input type="file" name="file" title="Name of the CSV file to upload" />
+		 <input type="submit" value="Upload" /><br />
+	 </form><br />
+
+	 <form name="add_software" method=POST action="/asset_manager_cgi/manager.cgi">
+		<input type="hidden" name="mode" value="add_software">
+
+		 Name of a new software <input type="text" name="software_name" title="Name of the software" />
+		 <input type="submit" value="Add" /><br />
+	 </form> 
+
+[% content %]
+
+</body>
+</html>

@@ -1,0 +1,5 @@
+[% 
+   IF mode == 'search';
+   		INCLUDE search_page.tt;
+   END;
+%]

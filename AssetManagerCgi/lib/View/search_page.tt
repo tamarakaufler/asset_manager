@@ -1,0 +1,48 @@
+<h3>Search results</h3>
+
+[% IF ! assets.size %]
+	No such items of asset found
+[% ELSE %]
+	<h4>[% assets.size %] item[% IF assets.size > 1 %]s[% END %] found</h4>
+[% END %]
+
+[% FOREACH asset IN assets %] 
+	<table>  
+
+		 <form method=POST action="/asset_manager_cgi/manager.cgi">
+			<input type="hidden" name="mode" value="associate">
+			<input type="hidden" name="asset" value="[% asset.id %]">
+			<tr>  
+				<td>            
+					<strong>[% asset.name %]</strong>
+				</td>            
+				<td>            
+					<strong>([% asset.datacentre.name %])</strong>
+				</td>            
+			</tr>              
+			[% FOREACH software IN asset.softwares  %] 
+				<tr colspan="2">  
+					<td>            
+						[% software.name %]
+					</td>            
+				</tr>       	
+			[% END %]
+			<tr colspan="2"><td>
+
+				 Select softwares to associate with
+				 <select name="softwares" "multiple" size="3">
+					[% FOREACH software = softwares %]
+						<option value="[% software.id %]">[% software.name %]
+					[% END %]
+					<input type="submit" value="Associate" />
+				 </select>		 		 
+
+			</td></tr>
+			<tr colspan="2"><td></td></tr>
+
+		</form> 
+
+	</table>                
+[% END %]
+
+
