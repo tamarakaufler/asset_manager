@@ -2,7 +2,7 @@ package AssetManagerApi2::Controller::Root;
 use Moose;
 use namespace::autoclean;
 
-BEGIN { extends 'Catalyst::Controller' }
+BEGIN { extends 'Catalyst::Controller::REST' }
 
 #
 # Sets the actions in this controller to be registered with no prefix
@@ -31,8 +31,7 @@ The root page (/)
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
 
-    # Hello World
-    $c->response->body( $c->welcome_message );
+    $c->res->redirect('/api/asset');
 }
 
 =head2 default

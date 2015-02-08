@@ -14,21 +14,6 @@ use AssetManagerApi2::Helper::Entity qw(
                                         throws_error
                                      );
 
-##use AssetManagerApi2::Controller::Helper::Api qw(
-##                                    get_asset_summary
-##                                    get_listing
-##
-##                                    process_csv_upload
-##                                    process_json_upload
-##                                    create_from_inline_input
-##
-##                                    create_entity
-##                                    update_entity
-##                                    delete_entity
-##
-##                                    throws_error
-##                                              );
-
 =head1 NAME
 
 AssetManagerApi2::Controller::Entity - Catalyst Controller
@@ -44,13 +29,28 @@ Catalyst Controller.
 
 =head2 index
 
+redirects to api method
+
 =cut
 
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->response->body('Matched AssetManagerApi2::Controller::Entity in Entity.');
+    $c->detach('api', ['asset']);
 }
+
+=head2 api_catch
+
+catches api calls and redirects to api method
+
+=cut
+
+sub api_catch  :Chained('/') :PathPart('api') {
+    my ($self, $c) = @_;
+
+    $c->detach('api', ['asset']);
+}
+
 
 =head2 api
 
