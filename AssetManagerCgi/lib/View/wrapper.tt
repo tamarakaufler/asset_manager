@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 </head>
  <body>
-	 <p><strong><a href="/asset_manager_cgi/manager.cgi">Welcome to The Wardrobe Manager</a></strong></p>
+	 <p><strong><a href="/asset_manager_cgi/manager.cgi">Welcome to The Asset Manager</a></strong></p>
 
 	 [% IF message %] <p style="color: blue;"> [% message %]</p>[% END %]
 	 [% IF error %]   <p style="color: red;">[% error %]    </p>[% END %]
