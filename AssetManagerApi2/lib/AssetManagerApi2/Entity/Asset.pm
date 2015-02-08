@@ -93,17 +93,10 @@ around BUILDARGS => sub {
                      
 sub _build_type { 
     my ($self) = @_;
-
-    $self->type('asset'); 
 }
 
 sub _build_dbic {
     my ($self) = @_;
-
-    my $c    = $_[0]->{c};
-    my $dbic = $c->model($asset_model)->find({ id => (ref $_) ? $_[0]->{id} : $_{id} });
-
-    $self->dbic($dbic);
 }
  
 sub _build_name {
@@ -127,7 +120,7 @@ sub _build_software {
 
     my $c = $self->c;
 
-    my $self_software_dbic = $c->model($asset_model)->find({id => $_[0]->{id}})->softwares;
+    my $self_software_dbic = $self->dbic->softwares;
 
     my @software = ();
     while (my $package = $self_software_dbic->next) {

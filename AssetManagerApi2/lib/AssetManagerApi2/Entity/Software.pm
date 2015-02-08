@@ -46,7 +46,7 @@ has 'assets  '   => (is  => 'ro',
                      isa => "ArrayRef[HashRef]|ArrayRef",
                      lazy     =>  1,
                      builder => '_build_assets',
-                     writer => '_set_asset',
+                     writer => '_set_assets',
                     );
 
 =head2 MOOSE METHODS
@@ -81,17 +81,10 @@ around BUILDARGS => sub {
                      
 sub _build_type { 
     my ($self) = @_;
-
-    $self->type('asset'); 
 }
 
 sub _build_dbic {
     my ($self) = @_;
-
-    my $c    = $_[0]->{c};
-    my $dbic = $c->model($software_model)->find({ id => (ref $_) ? $_[0]->{id} : $_{id} });
-
-    $self->dbic($dbic);
 }
  
 sub _build_name {
@@ -105,7 +98,8 @@ sub _build_assets {
 
     my $c = $self->c;
 
-    my $self_assets_dbic = $c->model($software_model)->find({id => $_[0]->{id}})->assets;
+    #my $self_assets_dbic = $c->model($software_model)->find({id => $_[0]->{id}})->assets;
+    my $self_assets_dbic = $self->dbic->assets;
 
     my @assets = ();
     while (my $package = $self_assets_dbic->next) {

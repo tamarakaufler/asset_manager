@@ -54,6 +54,10 @@ has 'assets'     => (is  => 'ro',
 
 =head3 BUILDARGS
 
+IN:     Catalyst object
+        id
+        entity type
+
 The instance is associated with the DBIC object.
     1) Retrieve the DBIC object
     2) Set up some of the Datacentre object properties before
@@ -80,17 +84,10 @@ around BUILDARGS => sub {
                      
 sub _build_type { 
     my ($self) = @_;
-
-    $self->type('datacentre'); 
 }
 
 sub _build_dbic {
     my ($self) = @_;
-
-    my $c    = $_[0]->{c};
-    my $dbic = $c->model($datacentre_model)->find({ id => (ref $_) ? $_[0]->{id} : $_{id} });
-
-    $self->dbic($dbic);
 }
  
 sub _build_name {
@@ -104,7 +101,7 @@ sub _build_assets {
 
     my $c = $self->c;
 
-    my $self_assets_dbic = $c->model($datacentre_model)->find({id => $_[0]->{id}})->assets;
+    my $self_assets_dbic = $self->dbic->assets;
 
     my @assets = ();
     while (my $package = $self_assets_dbic->next) {
