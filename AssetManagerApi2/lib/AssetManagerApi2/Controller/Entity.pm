@@ -80,8 +80,11 @@ sub api  :Chained('/') :PathPart('api') CaptureArgs(1) :ActionClass('REST') {
 
 =head2 api_GET
 
-The method will accept an arbitrary number of url parameters,
-providing flexible search options
+Leaving an optional number of URL parameters
+to be captured and processed dynamically 
+gives flexibility regarding the database table design.
+The code does not need to be changed 
+if table schemas change
 
 =cut
 
