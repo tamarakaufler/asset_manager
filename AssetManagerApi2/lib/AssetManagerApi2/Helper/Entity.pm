@@ -45,6 +45,8 @@ use AssetManagerApi2::EntityFactory;
     create_output_structure
     massage4output
     get_listing
+    type2table
+
     error_exists
     throws_error
 
@@ -97,9 +99,9 @@ sub create_output_structure {
         %props = (id => $dbic->id, name => $dbic->name);
     }
 
-    my $entity_props = { %props,
-                         link => $c->uri_for("/api/$type/id/" . $dbic->id)->as_string,
-                         docs => $c->uri_for("/api/docs/$type")->as_string,
+    my $entity_props = { properties => \%props,
+                         link       => $c->uri_for("/api/$type/id/" . $dbic->id)->as_string,
+                         docs       => $c->uri_for("/api/docs/$type")->as_string,
                        };
 }
 
