@@ -91,9 +91,6 @@ sub api_GET :Chained('api') :PathPart('') Args {
     my $type =  $c->stash->{entity_type};
     $c->stash->{ search_params } = \@url_params;
 
-    #my $entity = AssetManagerApi2::Entity::Asset->new({ c => $c, id => 1});
-    #my $response_data = [massage4output($entity)];
-
     my $response_data = get_listing($c, $type, $c->stash->{ search_params });
     throws_error($self, $c, $response_data);
 
