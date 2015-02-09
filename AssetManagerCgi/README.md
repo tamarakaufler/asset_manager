@@ -1,8 +1,8 @@
 Asset Manager - CGI application
 
-MVC design
-Template Toolkit
-DBIx::Class
+	MVC design
+	Template Toolkit
+	DBIx::Class
 
 INSTALLATION
 

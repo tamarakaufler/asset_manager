@@ -137,24 +137,24 @@ sub get_summary {
     my @softwares = $self->softwares();
     my $datacentre = $self->datacentre;
 
-    my $self_output = { id   => $self->id,
-                        name => $self->name,
-                        link => $c->uri_for("/api/asset/id/" . $self->id)->as_string,
+    my $self_output = { properties => { id   => $self->id,
+                        		name => $self->name, },
+                       	link => $c->uri_for("/api/asset/id/" . $self->id)->as_string,
                         docs => $c->uri_for("/docs/asset")->as_string };
 
-    $self_output->{ datacentre } = { id   => $datacentre->id, 
-                                   name => $datacentre->name,
-                                   link => $c->uri_for("/api/datacentre/id/" . $datacentre->id)->as_string,
-                                   docs => $c->uri_for("/docs/datacentre")->as_string };
+    $self_output->{ properties }{ datacentre } = { properties => { id   => $datacentre->id, 
+                                     		     		   name => $datacentre->name, },
+                                     		   link => $c->uri_for("/api/datacentre/id/" . $datacentre->id)->as_string,
+                                     		   docs => $c->uri_for("/docs/datacentre")->as_string };
 
     my @software_output = (); 
     for my $software (@softwares) {
-        push @software_output, {  id   => $software->id,
-                                name => $software->name,
-                                link => $c->uri_for("/api/software/id/" . $software->id)->as_string,
-                                docs => $c->uri_for("/docs/software")->as_string };
+        push @software_output, { properties => { id   => $software->id,
+                                		 name => $software->name, },
+                                 link => $c->uri_for("/api/software/id/" . $software->id)->as_string,
+                                 docs => $c->uri_for("/docs/software")->as_string };
     }
-    $self_output->{ software } = \@software_output;
+    $self_output->{ properties }{ software } = \@software_output;
 
     return $self_output;
 }
