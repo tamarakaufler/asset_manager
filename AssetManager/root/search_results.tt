@@ -31,7 +31,7 @@
 			<tr colspan="2"><td>
 
 				 Select softwares to associate with
-				 <select name="softwares" "multiple" size="3">
+				 <select name="softwares" multiple size="3">
 					[% FOREACH software = softwares %]
 						<option value="[% software.id %]">[% software.name %]
 					[% END %]
