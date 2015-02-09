@@ -39,14 +39,12 @@ has 'name'       => (is  => 'rw',
                      isa => 'Str',
                      lazy     =>  1,
                      builder => '_build_name',
-                     writer => '_set_name',
                      );
 
 has 'assets  '   => (is  => 'ro', 
                      isa => "ArrayRef[HashRef]|ArrayRef",
                      lazy     =>  1,
                      builder => '_build_assets',
-                     writer => '_set_assets',
                     );
 
 =head2 MOOSE METHODS
@@ -97,17 +95,15 @@ sub _build_assets {
     my ($self) = @_;
 
     my $c = $self->c;
-
-    #my $self_assets_dbic = $c->model($software_model)->find({id => $_[0]->{id}})->assets;
     my $self_assets_dbic = $self->dbic->assets;
 
     my @assets = ();
     while (my $package = $self_assets_dbic->next) {
-        my $assets = create_output_structure($c, $package, 'asset');
-        push @assets, $assets;
+        my $asset = create_output_structure($c, $package, 'asset');
+        push @assets, $asset;
     }
 
-    return \@assets;
+    $self->assets(\@assets);
 }
 
 =head2 PRIVATE HELPER METHODS

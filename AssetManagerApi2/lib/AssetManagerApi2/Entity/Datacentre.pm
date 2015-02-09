@@ -39,7 +39,6 @@ has 'name'       => (is  => 'rw',
                      isa => 'Str',
                      lazy     =>  1,
                      builder => '_build_name',
-                     writer => '_set_name',
                      );
 
 has 'assets'     => (is  => 'ro', 
@@ -109,7 +108,7 @@ sub _build_assets {
         push @assets, $asset;
     }
 
-    return \@assets;
+    $self->assets(\@assets);
 }
 
 =head2 PRIVATE HELPER METHODS

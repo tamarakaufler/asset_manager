@@ -8,9 +8,7 @@ use feature 'unicode_strings';
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
-use AssetManagerApi2::Helper::Entity qw(
-                                        type2table
-                                     );
+use AssetManagerApi2::Helper::Entity;
 
 =head3 new
 
@@ -23,8 +21,7 @@ IN: class
 sub new {
     my $class = shift;
 
-    #my $entity = type2table(shift); 
-    my $entity = ucfirst shift; 
+    my $entity = AssetManagerApi2::Helper::Entity::type2table(shift); 
 
     my $path  = "AssetManagerApi2/Entity/$entity.pm";
     $class    = "AssetManagerApi2::Entity::$entity";

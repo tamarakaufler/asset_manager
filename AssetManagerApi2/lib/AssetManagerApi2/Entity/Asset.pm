@@ -12,12 +12,7 @@ use AssetManagerApi2::Helper::Entity qw(
                                         create_output_structure
                                      );
 
-my ($asset_model,
-    $asset_software_model,
-    $datacentre_model) = ('AssetManagerDB::Asset',
-                          'AssetManagerDB::AssetSoftware',
-                          'AssetManagerDB::Datacentre',
-                        );
+my $asset_model = 'AssetManagerDB::Asset';
 
 has 'c'          => (is       => 'ro', 
                      isa      => 'AssetManagerApi2',
@@ -44,21 +39,18 @@ has 'name'       => (is  => 'rw',
                      isa => 'Str',
                      lazy     =>  1,
                      builder => '_build_name',
-                     writer => '_set_name',
                      );
 
 has 'datacentre' => (is  => 'rw', 
                      isa => 'HashRef',
                      lazy     =>  1,
                      builder => '_build_datacentre',
-                     writer => '_set_datacentre',
                     );
 
 has 'software'   => (is  => 'ro', 
                      isa => "ArrayRef[HashRef]|ArrayRef",
                      lazy     =>  1,
                      builder => '_build_software',
-                     writer => '_set_software',
                     );
 
 =head2 MOOSE METHODS
@@ -128,7 +120,7 @@ sub _build_software {
         push @software, $software;
     }
 
-    return \@software;
+    $self->software(\@software);
 }
 
 =head2 PRIVATE HELPER METHODS
@@ -142,8 +134,8 @@ sub _build_software {
 sub associate_software {
     my ($self, $props) = @_;
 
-    my $c = $self->c;
-    my $dbic = $c->model($asset_model)->find_or_create($props);
+    my $c    = $self->c;
+    my $dbic = $self->dbic->find_or_create($props);
 
     create_output_structure($c, $dbic, 'asset_software');
 }

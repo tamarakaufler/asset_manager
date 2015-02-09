@@ -39,8 +39,6 @@ $ENV{DBIC_TRACE} = 1;
 
 use AssetManagerApi2::EntityFactory;
 
-sub type2table;
- 
 =head2 PUBLIC API METHODS
 
     create_entity_input
@@ -49,6 +47,22 @@ sub type2table;
     get_listing
     error_exists
     throws_error
+
+=cut
+
+=head3 type2table
+
+derives DBIx Source from  the table
+
+=cut
+
+sub type2table {
+    my ($type) = @_;
+
+    return ucfirst $type unless $type =~ /_/;
+
+    $type = join '', map { ucfirst $_ } split /_/, $type ;
+}
 
 =head3 create_entity_input
 
@@ -237,19 +251,6 @@ sub throws_error {
 
 }
 
-=head3 type2table
-
-derives DBIx Source from  the table
-
-=cut
-
-sub type2table {
-    my ($type) = @_;
-
-    return ucfirst $type unless $type =~ /_/;
-
-    $type = join '', map { ucfirst $_ } split /_/, $type ;
-}
 
 =head3 error_exists
 
