@@ -32,6 +32,7 @@ sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
 
     $c->res->redirect('/api/asset');
+    #$c->detach('AssetManagerApi2::Controller::Entity', 'api', ['asset']);
 }
 
 =head2 default
@@ -42,6 +43,7 @@ Standard 404 error page
 
 sub default :Path {
     my ( $self, $c ) = @_;
+
     $c->response->body( 'Page not found' );
     $c->response->status(404);
 }
