@@ -47,23 +47,29 @@ Catalyst Controller.
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
 
-    my $response_data = get_asset_summary($c);
-    throws_error($self, $c, $response_data);
+    $c->detach('api', ['asset']);
+}
 
-    $self->status_ok(
-                        $c,
-                        entity => $response_data,
-                    );
+=head2 api_catch
+
+catches api calls and redirects to api method
+
+=cut
+
+sub api_catch  :Chained('/') :PathPart('api') {
+    my ($self, $c) = @_;
+
+    $c->detach('api', ['asset']);
 }
 
 =head2 api
 
 =cut
 
-sub api  :Path('/api')   :ActionClass('REST') {
-    my ($self, $c, @url_params) = @_;
+sub api  :Chained('/') :PathPart('api') CaptureArgs(1) :ActionClass('REST') {
+    my ($self, $c, $type) = @_;
 
-    $c->stash->{ entity_type }   = shift @url_params;
+    $c->stash->{ entity_type } = $type;
 
     if (! $c->stash->{ entity_type }        || 
         ! scalar grep { $c->stash->{ entity_type } eq $_ } qw(asset datacentre outfit asset_outfit)) {
@@ -73,17 +79,23 @@ sub api  :Path('/api')   :ActionClass('REST') {
                         );
     }
 
-    $c->stash->{ search_params } = \@url_params;
 }
 
 =head2 api_GET
 
+Leaving an optional number of URL parameters
+to be captured and processed dynamically 
+gives flexibility regarding the database table design.
+The code does not need to be changed 
+if table schemas change
+
 =cut
 
-sub api_GET {
-    my ( $self, $c ) = @_;
+sub api_GET :Chained('api') :PathPart('') Args {
+    my ( $self, $c, @url_params ) = @_;
 
     my $type =  $c->stash->{entity_type};
+    $c->stash->{ search_params } = \@url_params;
     
     my $response_data = get_listing($c, $type, $c->stash->{ search_params });
     throws_error($self, $c, $response_data);
