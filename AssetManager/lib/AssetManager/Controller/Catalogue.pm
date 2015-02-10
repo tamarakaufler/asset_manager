@@ -11,7 +11,7 @@ use Encode qw(encode);
 
 use AssetManager::Controller::Helper;
 
-#$ENV{DBIC_TRACE} = 1;
+$ENV{DBIC_TRACE} = 1;
 
 =head1 NAME
 
@@ -58,11 +58,11 @@ sub search : Path('search') CaptureArgs(0) {
                                      {},
                                      { order_by => [qw/ name /] }
                                  );
-
+     
     my ($assets, $softwares) = massage4output($assets_rs, $softwares_rs);
 
-    $c->stash->{ assets } = $assets;
-    $c->stash->{ softwares }   = $softwares;
+    $c->stash->{ assets }    = $assets;
+    $c->stash->{ softwares } = $softwares;
 
     $c->stash->{ mode }      = 'search';
     $c->stash->{ template }  = 'index.tt';
@@ -151,6 +151,7 @@ sub associate :Path('associate') {
 
     if ( exists $message{ message } ) {
         $c->stash->{ message } = $message{ message };
+        $c->stash->{ asset_softwares }  = $message{ asset_softwares };
         $c->detach('/index');
 
 

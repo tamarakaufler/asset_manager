@@ -14,6 +14,8 @@ use open ':encoding(utf8)';
 use feature 'unicode_strings';
 use Encode qw(encode);
 
+$ENV{DBIC_TRACE} = 1;
+
 use Text::CSV::Encoded;
 
 use base qw(Exporter);
@@ -174,12 +176,14 @@ sub reassociate_software {
                                         "An error happened when associating software";
                                         return %message;
                                    };
+                map { $message{ asset_softwares }{ $asset_id }{ $_ } = 1  } @$software_ids_ref;
 
     } else {
                 $asset->remove_softwares() or do {
                                     $message{ error } = "An error happened when disassociating software";
                                     return %message;
                                }; 
+                $message{ asset_softwares }{ $asset_id } = {};
     }
 
     $message{ message } = 'The asset item "' . encode('utf8', $asset->name) . '" has been reassociated';
@@ -204,17 +208,22 @@ sub massage4output {
 
     while (my $asset = $assets_rs->next) {
         my $datacentre = $asset->datacentre;
+
+        my $asset_softwares = {};
+        map { $asset_softwares->{$_->id} = 1 } $asset->softwares;
         
         push @$assets, { id => $asset->id, name => encode('utf8', $asset->name),  
-                            datacentre => { 
+                         datacentre => { 
                                             id   => $asset->datacentre->id, 
                                             name => encode('utf8', $asset->datacentre->name), 
-                                        },
-                          };
+                                       },
+                         softwares => $asset_softwares,
+                       };
     }
     while (my $software = $softwares_rs->next) {
         push @$softwares, { id => $software->id, name => encode('utf8', $software->name), };
     }
+
 
     return ($assets, $softwares);
 }
