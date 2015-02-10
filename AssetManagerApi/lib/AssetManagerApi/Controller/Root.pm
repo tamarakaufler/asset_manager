@@ -31,8 +31,7 @@ The root page (/)
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
 
-    # Hello World
-    $c->response->body( $c->welcome_message );
+    $c->res->redirect('/api/asset');
 }
 
 =head2 default
@@ -43,8 +42,8 @@ Standard 404 error page
 
 sub default :Path {
     my ( $self, $c ) = @_;
-    $c->response->body( 'Page not found' );
-    $c->response->status(404);
+
+    $c->res->redirect('/api/asset');
 }
 
 =head2 end
