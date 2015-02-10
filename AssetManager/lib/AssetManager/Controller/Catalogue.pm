@@ -120,9 +120,9 @@ sub upload :Path('upload') {
 }
 
 
-=head2 associate method
+=head2 associate
 
-replaces existing software tags with new ones
+replaces existing software with new associations
 
 =cut
 
@@ -146,8 +146,8 @@ sub associate :Path('associate') {
         push @sanitized_software_ids, $1;
     }
 
-    my %message = retag_asset( $c, 
-                                     $asset_id, \@sanitized_software_ids);
+    my %message = reassociate_software( $c, 
+                                        $asset_id, \@sanitized_software_ids);
 
     if ( exists $message{ message } ) {
         $c->stash->{ message } = $message{ message };
@@ -159,43 +159,8 @@ sub associate :Path('associate') {
         $c->detach('/index');
     }
 
-
-
-    my $asset = $c->model('DB::Asset')
-                     ->find( $asset_id ) or do {
-                                $c->stash->{ error } = 
-                                        "An error happened when retrieving asset (id $asset_id) from the database";
-                                $c->detach('/index');
-                            };
-    
-    ## retag
-    if ( scalar @sanitized_software_ids ) {
-        my @selected_softwares = $c->model('DB::Software')
-                                 ->search({ id => { '-in' => \@sanitized_software_ids } } ) or do {
-                                        $c->stash->{ error } = 
-                                        "An error happened when retrieving software from the database";
-                                        $c->detach('/index');
-                                   };
-        !$asset->set_softwares( \@selected_softwares ) or do {
-                                        $c->stash->{ error } = 
-                                                    "An error happened when  reassociating software with the assets";
-                                        $c->detach('/index');
-                                   };
-
-    } else {
-        map { 
-                $asset->remove_from_softwares($_) or do {
-                                    $c->stash->{ error } = "2 An error happened when reassociating software with the assets";
-                                    $c->detach('/index');
-                               }; 
-            } $asset->softwares;
-
-    }
-
-    $c->stash->{ message } = 'Software has been reasociated for server "' . encode('utf8', $asset->name);
-
 }
-=head2 add_software method
+=head2 add_software
 
 creates a new software if it does not alrready exist
 

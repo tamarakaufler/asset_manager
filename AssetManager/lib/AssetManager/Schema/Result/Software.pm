@@ -89,7 +89,9 @@ __PACKAGE__->add_unique_constraint("name_uniq", ["name"]);
 # Created by DBIx::Class::Schema::Loader v0.07039 @ 2015-02-09 21:32:21
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:7/Cg7A4OsdROJhuB3XgdAA
 
+__PACKAGE__->has_many(asset_softwares => 'AssetManager::Schema::Result::AssetSoftware',
+                                         'software');
+__PACKAGE__->many_to_many(assets => 'asset_softwares', 'asset');
 
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 __PACKAGE__->meta->make_immutable;
 1;

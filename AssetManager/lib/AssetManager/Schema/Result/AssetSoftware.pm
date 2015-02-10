@@ -76,6 +76,18 @@ __PACKAGE__->set_primary_key("asset", "software");
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Rs/a4+wyWfxfTx57XBB0Sw
 
 
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
+__PACKAGE__->belongs_to(
+  "asset",
+  "AssetManager::Schema::Result::Asset",
+  { id => "asset" },
+  { is_deferrable => 1, on_update => "CASCADE" },
+);
+__PACKAGE__->belongs_to(
+  "software",
+  "AssetManager::Schema::Result::Software",
+  { id => "software" },
+  { is_deferrable => 1, on_update => "CASCADE" },
+);
+
 __PACKAGE__->meta->make_immutable;
 1;

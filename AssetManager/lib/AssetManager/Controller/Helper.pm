@@ -125,8 +125,8 @@ sub add_to_catalogue {
 
 =head3 reassociate_software
 
-    retags the specified item of asset:
-                  replaces by new association or removes all associations in asset_software
+    reassociate software with asset:
+                  replaces with new association or removes all associations in asset_software
 
     parameters:   c object
                   asset id
@@ -155,11 +155,11 @@ sub reassociate_software {
     ## get the asset object
     my $asset = $c->model('DB::Asset')->find( $asset_id ) or do {
         $message{ error } = 
-                "An error happened when recovering the asset (id $asset_id) from the database";
+                "An error happened when retrieving asset (id $asset_id) from the database";
         return %message;
     };
     
-    ## retag
+    ## reassociate
     if ( scalar @{ $software_ids_ref } ) {
         my @selected_softwares = $c->model('DB::Software')
                                  ->search({ id => { '-in' => $software_ids_ref } } ) 
@@ -168,24 +168,21 @@ sub reassociate_software {
                                         "An error happened when recovering selected softwares from the database";
                                         return %message;
                                    };
-        !$asset->set_softwares( \@selected_softwares )
+        $asset->update_softwares( $c, $software_ids_ref )
                              or do {
                                         $message{ error } = 
-                                        "An error happened when adding tags to the database";
+                                        "An error happened when associating software";
                                         return %message;
                                    };
 
     } else {
-        map { 
-                $asset->remove_from_softwares($_) or do {
-                                    $message{ error } = "An error happened when adding tags to the database";
+                $asset->remove_softwares() or do {
+                                    $message{ error } = "An error happened when disassociating software";
                                     return %message;
                                }; 
-            } $asset->softwares;
-
     }
 
-    $message{ message } = 'The asset item "' . encode('utf8', $asset->name) . '" has been retagged';
+    $message{ message } = 'The asset item "' . encode('utf8', $asset->name) . '" has been reassociated';
 
     return %message;    
 
@@ -206,7 +203,6 @@ sub massage4output {
     my $softwares   = [];
 
     while (my $asset = $assets_rs->next) {
-        say STDERR $asset->name;
         my $datacentre = $asset->datacentre;
         
         push @$assets, { id => $asset->id, name => encode('utf8', $asset->name),  
