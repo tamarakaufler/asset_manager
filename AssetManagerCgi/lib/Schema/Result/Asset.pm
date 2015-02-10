@@ -117,5 +117,32 @@ __PACKAGE__->has_many( asset_softwares => 'Schema::Result::AssetSoftware',
 					  'asset');
 __PACKAGE__->many_to_many( softwares => 'asset_softwares', 'software');
 
+sub update_softwares {
+    my ($self, $c, $ids) = @_;
+
+	eval {
+	    $self->remove_softwares($c);
+	
+	    for my $id (@$ids) {
+	        $c->model('DB::AssetSoftware')->find_or_create( { asset => $self->id, software => $id } );
+	    }
+	};
+	
+    if ($@) {
+	    return;
+    } 
+    else {
+        return 1;
+    }
+}
+
+sub remove_softwares {
+    my ($self, $c) = @_;
+
+    my $asset_soft_rs = $c->model('DB::AssetSoftware')->search( { asset => $self->id } );
+    $asset_soft_rs->delete if $asset_soft_rs;
+}
+
+__PACKAGE__->meta->make_immutable;
 
 1;

@@ -211,7 +211,7 @@ sub reassociate_software {
                                         "An error happened when recovering selected softwares from the database";
                                         return %message;
                                    };
-        !$asset->set_softwares( \@selected_softwares )
+        $asset->update_softwares( $c, $software_ids_ref )
                              or do {
                                         $message{ error } = 
                                         "An error happened when adding associates to the database";
@@ -219,12 +219,10 @@ sub reassociate_software {
                                    };
 
     } else {
-        map { 
-                $asset->remove_from_softwares($_) or do {
+                $asset->remove_from_softwares() or do {
                                     $message{ error } = "An error happened when adding associates to the database";
                                     return %message;
                                }; 
-            } $asset->softwares;
 
     }
 
