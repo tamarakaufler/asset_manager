@@ -33,10 +33,7 @@ Required modules are listed in Makefile.PL and will be installed by running
 
 INSTALLATION
 
-    From tarball:
-        unpack the tarball: tar zxvf asset_manager_api.tar.gz
-
-    From github (if available):
+    From github:
         git clone git://github.com/tamarakaufler/asset_manager.git
         cd asset_manager/AssetManagerApi
         script/assetmanagerapi_server -h localhost -p 3010 etc
