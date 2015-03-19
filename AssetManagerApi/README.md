@@ -1,6 +1,6 @@
 REQUIREMENTS
 
-Provide a RESTful web service with equivalent functionality as the Asset Management web application with GUI
+Provide a RESTful web service with equivalent functionality as the Asset Management web application
 
 IMPLEMENTATION
 
@@ -11,7 +11,7 @@ Perl v5.18.2
 Catalyst 5.09
 MySQ: 5.5
 
-The application requires a couple of less usual Perl modules like:
+The application requires a couple of additional Perl modules:
 
     Catalyst::Controller::REST
     Lingua::EN::Inflect
@@ -25,7 +25,7 @@ INSTALLATION
     From github:
         git clone git://github.com/tamarakaufler/asset_manager.git
         cd asset_manager/AssetManagerApi
-        script/assetmanagerapi_server -h localhost -p 3010 etc
+        script/assetmanagerapi_server -h localhost -p 3010 or another suitable port
 
 MySQL
 
@@ -109,6 +109,16 @@ POST:
 
         curl -X POST -F 'file=@incorrect_format.js'  http://localhost:3010/api/asset
         curl -X POST -F 'file=@empty.csv'  http://localhost:3010/api/asset
+
+DOCUMENTATION
+
+http://127.0.0.1:3010/readme
+
+http://127.0.0.1:3010/docs/asset
+http://127.0.0.1:3010/docs/datacentre
+http://127.0.0.1:3010/docs/software
+http://127.0.0.1:3010/asset_software
+
 
 LIMITATIONS
 
