@@ -56,7 +56,7 @@ catches api calls and redirects to api method
 
 =cut
 
-sub api_catch  :Chained('/') :PathPart('api') {
+sub api_catch  :Chained('/') :PathPart('api') :Args {
     my ($self, $c) = @_;
 
     $c->detach('api', ['asset']);
@@ -66,16 +66,16 @@ sub api_catch  :Chained('/') :PathPart('api') {
 
 =cut
 
-sub api  :Chained('/') :PathPart('api') CaptureArgs(1) :ActionClass('REST') {
+sub api  :Chained('/') :PathPart('api') :CaptureArgs(1) :ActionClass('REST') {
     my ($self, $c, $type) = @_;
 
     $c->stash->{ entity_type } = $type;
 
     if (! $c->stash->{ entity_type }        || 
-        ! scalar grep { $c->stash->{ entity_type } eq $_ } qw(asset datacentre outfit asset_outfit)) {
+        ! scalar grep { $c->stash->{ entity_type } eq $_ } qw(asset datacentre software asset_software)) {
         $self->status_bad_request(
                             $c,
-                            message => 'Error: /api/asset|datacentre|outfit asset_outfit/...',
+                            message => 'Error: /api/asset|datacentre|software asset_software/...',
                         );
     }
 
@@ -91,13 +91,12 @@ if table schemas change
 
 =cut
 
-sub api_GET :Chained('api') :PathPart('') Args {
-    my ( $self, $c, @url_params ) = @_;
+sub api_GET :Chained('api') :PathPart('') :Args(2) {
+    my ( $self, $c, @url_params) = @_;
 
     my $type =  $c->stash->{entity_type};
-    $c->stash->{ search_params } = \@url_params;
-    
-    my $response_data = get_listing($c, $type, $c->stash->{ search_params });
+    my $response_data = get_listing($c, $type, \@url_params);
+
     throws_error($self, $c, $response_data);
 
     if (scalar @$response_data) {
@@ -113,7 +112,6 @@ sub api_GET :Chained('api') :PathPart('') Args {
                           message => "No $plural found",
                         );
     }
-
 }
 
 =head2 api_POST
@@ -127,7 +125,7 @@ the input data format
 
 =cut
 
-sub api_POST {
+sub api_POST :Chained('api') :PathPart('') :Args(0) {
     my ($self, $c) = @_;
 
     my $response_data = {};
@@ -186,7 +184,7 @@ TODO
 
 =cut
 
-sub api_PUT {
+sub api_PUT :Chained('api') :PathPart('') :Args(0) {
     my ($self, $c) = @_;
 
     $c->response->body('So much more to do: updating ... ');
@@ -198,7 +196,7 @@ TODO
 
 =cut
 
-sub api_DELETE {
+sub api_DELETE :Chained('api') :PathPart('') :Args(1) {
     my ($self, $c) = @_;
 
     $c->response->body('So much more to do: deleting ... ');
