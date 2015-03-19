@@ -56,7 +56,7 @@ catches api calls and redirects to api method
 
 =cut
 
-sub api_catch  :Chained('/') :PathPart('api') :Args {
+sub api_catch  :Chained('/') :PathPart('api') {
     my ($self, $c) = @_;
 
     $c->detach('api', ['asset']);
@@ -66,7 +66,7 @@ sub api_catch  :Chained('/') :PathPart('api') :Args {
 
 =cut
 
-sub api  :Chained('/') :PathPart('api') :CaptureArgs(1) :ActionClass('REST') {
+sub api  :Chained('/') :PathPart('api') CaptureArgs(1) :ActionClass('REST') {
     my ($self, $c, $type) = @_;
 
     $c->stash->{ entity_type } = $type;
@@ -91,12 +91,13 @@ if table schemas change
 
 =cut
 
-sub api_GET :Chained('api') :PathPart('') :Args(2) {
-    my ( $self, $c, @url_params) = @_;
+sub api_GET :Chained('api') :PathPart('') Args {
+    my ( $self, $c, @url_params ) = @_;
 
     my $type =  $c->stash->{entity_type};
-    my $response_data = get_listing($c, $type, \@url_params);
-
+    $c->stash->{ search_params } = \@url_params;
+    
+    my $response_data = get_listing($c, $type, $c->stash->{ search_params });
     throws_error($self, $c, $response_data);
 
     if (scalar @$response_data) {
@@ -112,6 +113,7 @@ sub api_GET :Chained('api') :PathPart('') :Args(2) {
                           message => "No $plural found",
                         );
     }
+
 }
 
 =head2 api_POST
@@ -125,7 +127,7 @@ the input data format
 
 =cut
 
-sub api_POST :Chained('api') :PathPart('') :Args(0) {
+sub api_POST {
     my ($self, $c) = @_;
 
     my $response_data = {};
@@ -184,7 +186,7 @@ TODO
 
 =cut
 
-sub api_PUT :Chained('api') :PathPart('') :Args(0) {
+sub api_PUT {
     my ($self, $c) = @_;
 
     $c->response->body('So much more to do: updating ... ');
@@ -196,7 +198,7 @@ TODO
 
 =cut
 
-sub api_DELETE :Chained('api') :PathPart('') :Args(1) {
+sub api_DELETE {
     my ($self, $c) = @_;
 
     $c->response->body('So much more to do: deleting ... ');
