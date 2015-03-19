@@ -112,12 +112,12 @@ POST:
 
 DOCUMENTATION
 
-http://127.0.0.1:3010/readme
-
-http://127.0.0.1:3010/docs/asset
-http://127.0.0.1:3010/docs/datacentre
-http://127.0.0.1:3010/docs/software
-http://127.0.0.1:3010/asset_software
+    http://127.0.0.1:3010/readme
+    
+    http://127.0.0.1:3010/docs/asset
+    http://127.0.0.1:3010/docs/datacentre
+    http://127.0.0.1:3010/docs/software
+    http://127.0.0.1:3010/asset_software
 
 
 LIMITATIONS
