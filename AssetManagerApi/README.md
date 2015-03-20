@@ -122,17 +122,17 @@ DOCUMENTATION
 
 LIMITATIONS
 
-1) No unit tests
-2) Limited documentation
+    1) No unit tests
+    2) Limited documentation
 
 IMPROVEMENTS 
 
-1) Add crUD functionality (update/delete)
-2) When creating new entities, use find and create separately rather than find_or_create and output only created entities
-3) Write unit tests
-4) Add authentication/authorization
-5) Add caching to improve performace
-6) Add more POD
-7) Add versioning
-8) Could have used Try::Tiny
+    1) Add crUD functionality (update/delete)
+    2) When creating new entities, use find and create separately rather than find_or_create and output only created entities
+    3) Write unit tests
+    4) Add authentication/authorization
+    5) Add caching to improve performace
+    6) Add more POD
+    7) Add versioning
+    8) Could have used Try::Tiny
 
