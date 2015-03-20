@@ -43,7 +43,7 @@ sub index :Path :Args(0) {
 
 =cut
 
-sub search : Path('search') CaptureArgs(0) {
+sub search : Path('search') {
     my ( $self, $c ) = @_;
 
     my $name = sanitize( $c->req->param('asset_name') );
