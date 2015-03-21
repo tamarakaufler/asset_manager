@@ -1,4 +1,4 @@
-asset name, asset datacentre
+asset_name, asset_datacentre
 Server 1, Prague
 Server 2, Paris
 Server 3, London
